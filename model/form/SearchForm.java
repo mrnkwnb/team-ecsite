@@ -11,7 +11,6 @@ public class SearchForm implements Serializable {
 	private int category;
 	private String itemName;
 	
-	
 	public int getCategory() {
 		return category;
 	}
