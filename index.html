@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>ONLINE STORE utopia</title>
+
+<link href="/css/reset.css" th:href="@{/css/reset.css}" rel="stylesheet" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<body>
+
+<header th:insert="fragments/page_header::pageHeader"></header>
+
+<main>
+	<div class="container">
+		<form action="/utopia/searchItem">
+			カテゴリ
+			<select name="category" id="category">
+				<option value="0" text="" />
+				<option
+					th:each="category: ${mstCategory}"
+					th:value="${category.id}"
+					th:text="${category.categoryName}"
+					th:selected="${selected == category.id}" />
+			</select>
+			商品名（部分一致）
+			<input type="text" name="itemName" th:value="${keywords}" />
+			<button type="submit" class="search">検索</button>
+		</form>
+		
+		<div class="noData" th:if="${mstProduct == null || mstProduct.size() == 0}">
+			<p class="info">検索結果はありません。</p>
+		</div>
+		
+		<table class="top" th:if="${mstProduct != null && mstProduct.size() > 0}">
+			<tr>
+				<th>画像</th><th>商品名</th><th>価格(円)</th><th>個数</th><th>カート</th>
+			</tr>
+			<tr th:each="product : ${mstProduct}">
+				<td class="image">
+					<a href="/utopia/product" th:href="@{/utopia/product/{id}(id=${product.id})}">
+						<img class="itemImage" th:src="${product.imageFullPath}" th:alt="${product.productName}" />
+					</a>
+				</td>
+				<td><a href="/utopia/product" th:href="@{/utopia/product/{id}(id=${product.id})}" th:text="${product.productName}" /></td>
+				<td class="number" th:text="${product.price}" />
+				<td class="componentTd"><input type="number" class="count number" value="0" min="0" /></td>
+				<td class="componentTd"><button class="cartButton">追加</button></td>
+				<input type="hidden" th:value="${product.id}" id="hiddenProductId" />
+			</tr>
+		</table>
+	</div>
+</main>
+<script>
+	$(() => {
+		$('.cartButton').on('click', (event) => {
+			let tr = $(event.target).parent().parent();
+			let productId = $(tr).find('#hiddenProductId').val();
+			let productCount = $(tr).find('.count').val();
+			addCart(productId, productCount);
+		});	
+	});
+</script>
+</body>
+</html>
